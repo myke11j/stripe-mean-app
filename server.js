@@ -8,6 +8,9 @@ const errorHandler = require('errorhandler');
 const dotenv = require('dotenv');
 const path = require('path');
 const chalk = require('chalk')
+const fileUpload = require('express-fileupload');
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -25,10 +28,11 @@ const app = express();
  * Express configuration.
  */
 
-app.use(express.static('public'))
+app.use(express.static('public/'))
 app.use(logger('dev'));
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(fileUpload());
 
 /**
  * Error Handler.
@@ -40,9 +44,12 @@ if (process.env.NODE_ENV === 'development') {
 
 app.get('/getBuckets', (req, res) => {
   const buckets = [];
-  Object.keys(config).map((elm) => {
+  Object.keys(process.env).map((elm) => {
     if (elm.substring(0, 9) === 'S3_BUCKET') {
-      buckets.push(elm);
+      buckets.push({
+        key: elm,
+        bucket: process.env[elm]
+      });
     }
   });
   res.status(200).json({
@@ -50,8 +57,26 @@ app.get('/getBuckets', (req, res) => {
   });
 });
 
-app.post('/saveFile', (req, res) => {
+app.post('/upload', (req, res) => {
   console.log(req.body);
+  
+  var params = {
+    Body: req.body.file, 
+    Bucket: req.body.bucket, 
+    Key: req.body.fileName
+   };
+   s3.putObject(params, function(err, data) {
+     if (err) console.log(err, err.stack); // an error occurred
+     else     console.log(data);           // successful response
+     /*
+     data = {
+      ETag: "\"6805f2cfc46c0f04559748bb039d69ae\"", 
+      ServerSideEncryption: "AES256", 
+      VersionId: "Ri.vC6qVlA4dEnjgRV4ZHsHoFIjqEMNt"
+     }
+     */
+   });
+  
 });
 
 /**
