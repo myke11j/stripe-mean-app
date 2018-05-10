@@ -3,7 +3,6 @@ const userBucket = window.location.search.substring(1, window.location.search.le
 
 $(document).ready(function () {
     $('#uploadForm').submit(function(e) {
-        e.preventDefault();
         // $("#bucket").val(userBucket)
         $(this).ajaxSubmit({
             data: { bucket: userBucket },
