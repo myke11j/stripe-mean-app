@@ -1,4 +1,4 @@
-const url = `http://${window.location.hostname}:${window.location.port}/`;
+const url = `https://${window.location.hostname}:${window.location.port}/`;
 const userBucket = window.location.search.substring(1, window.location.search.length);
 
 $(document).ready(function () {
