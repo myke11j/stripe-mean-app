@@ -77,7 +77,7 @@ app.post('/api/upload',function(req,res){
       if(err) {
           return res.status(500).json({
             code:500,
-            message: 'Unable to upload file'
+            message: `Unable to upload file ${err}`
           });
       }
       const params = {
@@ -92,7 +92,7 @@ app.post('/api/upload',function(req,res){
           console.log(err);
           return res.status(500).json({
             code:500,
-            message: 'Unable to upload file'
+            message: `Unable to upload file ${err}`
           });
         }
         return res.status(200).json({
