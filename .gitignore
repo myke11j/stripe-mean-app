@@ -58,3 +58,4 @@ typings/
 .env
 creds.sh
 package-lock.json
+uploads/

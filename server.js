@@ -8,9 +8,24 @@ const errorHandler = require('errorhandler');
 const dotenv = require('dotenv');
 const path = require('path');
 const chalk = require('chalk')
-const fileUpload = require('express-fileupload');
+// const fileUpload = require('express-fileupload');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
+const fs = require('fs')
+var multer = require('multer');
+
+const fileObj = {};
+
+var storage =   multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, './uploads');
+  },
+  filename: function (req, file, callback) {
+    fileObj.dir = file.originalname + '-' + Date.now() + `.${file.mimetype.split('/')[1]}`;
+    callback(null, fileObj.dir);
+  }
+});
+var upload = multer({ storage : storage}).single('userPhoto');
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -32,7 +47,7 @@ app.use(express.static('public/'))
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(fileUpload());
+// app.use(fileUpload());
 
 /**
  * Error Handler.
@@ -57,26 +72,35 @@ app.get('/getBuckets', (req, res) => {
   });
 });
 
-app.post('/upload', (req, res) => {
-  console.log(req.body);
-  
-  var params = {
-    Body: req.body.file, 
-    Bucket: req.body.bucket, 
-    Key: req.body.fileName
-   };
-   s3.putObject(params, function(err, data) {
-     if (err) console.log(err, err.stack); // an error occurred
-     else     console.log(data);           // successful response
-     /*
-     data = {
-      ETag: "\"6805f2cfc46c0f04559748bb039d69ae\"", 
-      ServerSideEncryption: "AES256", 
-      VersionId: "Ri.vC6qVlA4dEnjgRV4ZHsHoFIjqEMNt"
-     }
-     */
-   });
-  
+app.post('/api/upload',function(req,res){
+  upload(req,res,function(err) {
+      if(err) {
+          return res.status(500).json({
+            code:500,
+            message: 'Unable to upload file'
+          });
+      }
+      const params = {
+        ACL: 'public-read',
+        Bucket: req.headers.referer.split('?')[1],
+        Key: fileObj.dir,
+        Body: fs.readFileSync(`uploads/${fileObj.dir}`)
+      }
+      s3.putObject(params, function(err, data) {
+        fs.unlinkSync('uploads/' + fileObj.dir);
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            code:500,
+            message: 'Unable to upload file'
+          });
+        }
+        return res.status(200).json({
+          code:200,
+          message: 'Successfully uploaded file'
+        });
+      });
+  });
 });
 
 /**
