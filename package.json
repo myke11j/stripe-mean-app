@@ -1,7 +1,7 @@
 {
-  "name": "s3-upload-doc",
+  "name": "stripe-meana-app",
   "version": "1.0.0",
-  "description": "Upload documents on S3",
+  "description": "MEAN js app for Stripe",
   "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=development nodemon server.js",
@@ -10,22 +10,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/myke11j/s3-upload-doc.git"
+    "url": "git+https://github.com/myke11j/stripe-mean-app.git"
   },
   "author": "Mukul <@mukul1904>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/myke11j/s3-upload-doc/issues"
+    "url": "https://github.com/myke11j/stripe-mean-app/issues"
   },
-  "homepage": "https://github.com/myke11j/s3-upload-doc#readme",
+  "homepage": "https://github.com/myke11j/stripe-mean-app#readme",
   "dependencies": {
-    "aws-sdk": "^2.235.1",
     "body-parser": "^1.18.2",
     "chalk": "^2.4.1",
     "dotenv": "^5.0.1",
     "errorhandler": "^1.5.0",
     "express": "^4.16.3",
-    "express-fileupload": "^0.4.0",
     "https": "^1.0.0",
     "morgan": "^1.9.0",
     "multer": "^1.3.0"

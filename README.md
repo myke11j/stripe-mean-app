@@ -1,2 +1,3 @@
-# s3-upload-doc
-Upload documents on S3
+# stripe-meana-app
+
+MEAN js app for Stripe
